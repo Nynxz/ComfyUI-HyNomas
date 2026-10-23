@@ -10,6 +10,7 @@ viewer. ``undo`` drops the last turn; ``reset`` starts a new world from the ``tu
 import json
 import logging
 import os
+import time
 import uuid
 
 import torch
@@ -56,12 +57,18 @@ def decode_new(vae, session):
     session.decoded = latent.shape[2]
 
 
-def save_clip(frames, fps=24):
+def save_clip(frames, fps=24, output=False):
+    """Write uint8 frames as an mp4: a temp preview, or (``output``) a file in output/video."""
     import av
     import numpy as np
 
-    name = f"nomas_explore_{uuid.uuid4().hex[:10]}.mp4"
-    path = os.path.join(folder_paths.get_temp_directory(), name)
+    if output:
+        folder, sub, kind = folder_paths.get_output_directory(), "video", "output"
+        name = f"nomas_explore_{time.strftime('%Y%m%d_%H%M%S')}.mp4"
+    else:
+        folder, sub, kind = folder_paths.get_temp_directory(), "", "temp"
+        name = f"nomas_explore_{uuid.uuid4().hex[:10]}.mp4"
+    path = os.path.join(folder, sub, name)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with av.open(path, "w") as c:
         s = c.add_stream("libx264", rate=fps)
@@ -70,7 +77,7 @@ def save_clip(frames, fps=24):
         for f in frames.numpy():
             c.mux(s.encode(av.VideoFrame.from_ndarray(np.ascontiguousarray(f), format="rgb24")))
         c.mux(s.encode())
-    return {"filename": name, "subfolder": "", "type": "temp"}
+    return {"filename": name, "subfolder": sub, "type": kind}
 
 
 class NomasExplore(IO.ComfyNode):
@@ -122,6 +129,16 @@ class NomasExplore(IO.ComfyNode):
             session = None  # a new size or seed starts over
 
         clip_start = 0
+        if op in ("view", "save"):
+            if session is None:
+                raise ValueError("no world to show yet: queue a turn first")
+            full = session.frames
+            clip = save_clip(full, output=op == "save")
+            ui = {"nomas_clip": [clip], "nomas_state": [{
+                "session": sid, "turns": len(session.world.segments), "frames": int(full.shape[0]),
+                "seconds": round(full.shape[0] / 24, 2), "can_undo": bool(session.undo),
+                "saved": f"{clip['subfolder']}/{clip['filename']}" if op == "save" else None, "op": op}]}
+            return IO.NodeOutput(full.float() / 255.0, {"samples": session.world.latent()}, session.world, ui=ui)
         if op == "undo":
             if session is None or not session.undo:
                 raise ValueError("nothing to undo")
@@ -153,7 +170,7 @@ class NomasExplore(IO.ComfyNode):
         shown = frames[max(0, clip_start - 12):]  # the new turn, with half a second of lead-in
         ui = {"nomas_clip": [save_clip(shown)], "nomas_state": [{
             "session": sid, "turns": len(session.world.segments), "frames": int(frames.shape[0]),
-            "seconds": round(frames.shape[0] / 24, 2), "can_undo": bool(session.undo)}]}
+            "seconds": round(frames.shape[0] / 24, 2), "can_undo": bool(session.undo), "op": op}]}
         logging.info("Nomas Explore: %s, %d turns, %.1f s", sid, len(session.world.segments), frames.shape[0] / 24)
         images = frames[clip_start:].float() / 255.0  # this turn only; the latent holds the whole world
         return IO.NodeOutput(images, {"samples": session.world.latent()}, session.world, ui=ui)

@@ -87,8 +87,12 @@ function setupNode(node) {
   textTurn.title = "Run the next turn without a camera move (uses 'change' / 'action')";
   const undo = el("button", "", "Undo");
   const reset = el("button", "", "New world");
+  const playAll = el("button", "", "Play all");
+  playAll.title = "Play the whole world from the start";
+  const save = el("button", "", "Save video");
+  save.title = "Save the whole world as an mp4 in output/video";
   const state = el("span", "", "");
-  row.append(length, textTurn, undo, reset, state);
+  row.append(length, textTurn, undo, reset, playAll, save, state);
   root.append(view, row);
 
   node.addDOMWidget("nomas_viewer", "nomas_viewer", root, { serialize: false, hideOnZoom: false });
@@ -105,7 +109,7 @@ function setupNode(node) {
   const submit = (op, ticks) => {
     controls.value = JSON.stringify({ session, op, nonce: Date.now(), ticks: ticks || [] });
     busy = true;
-    msg.textContent = op === "undo" ? "Undoing…" : "Generating the next turn…";
+    msg.textContent = { undo: "Undoing…", view: "Loading the whole world…", save: "Saving the video…" }[op] || "Generating the next turn…";
     app.queuePrompt(0, 1);
   };
 
@@ -165,6 +169,8 @@ function setupNode(node) {
   textTurn.onclick = () => { if (!busy) submit("turn", []); };
   undo.onclick = () => { if (!busy) submit("undo", []); };
   reset.onclick = () => { if (!busy) submit("reset", []); };
+  playAll.onclick = () => { if (!busy) submit("view", []); };
+  save.onclick = () => { if (!busy) submit("save", []); };
 
   node.nomasShow = (clip, info) => {
     busy = false;
@@ -177,10 +183,16 @@ function setupNode(node) {
       state.textContent = `${info.turns} turns · ${info.seconds} s`;
       undo.disabled = !info.can_undo;
     }
+    if (info?.saved) {
+      msg.textContent = `Saved output/${info.saved}`;
+      return;
+    }
     msg.textContent = "Hold W A S D / arrows (or drag) for the next move";
     // a text turn's words are used once
-    if (change) change.value = "";
-    if (action) action.value = "";
+    if (info?.op === "turn") {
+      if (change) change.value = "";
+      if (action) action.value = "";
+    }
   };
   node.nomasFailed = () => { busy = false; msg.textContent = "The turn failed — see the console. Try again."; };
 }

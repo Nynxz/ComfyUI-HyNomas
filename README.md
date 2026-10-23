@@ -57,6 +57,8 @@ In [`example_workflows`](example_workflows), also under **Templates → Custom N
   - **Text turn** runs a turn from the change/action fields without a move.
   - **Undo** drops the last turn, and **New world** starts over.
   - Each turn decodes only its new frames, plus 5 latents of overlap cross-faded into the old ones.
+  - **Play all** shows the whole world from the start, and **Save video** writes it to `output/video` as an mp4, both
+    from the frames already decoded.
 
 **Camera.** Only the direction and the relative speed of a move reach the model, because translations are normalised
 per turn. The turning speed does matter: rotations are not normalised, and the model scales them by 2.5×. A camera
