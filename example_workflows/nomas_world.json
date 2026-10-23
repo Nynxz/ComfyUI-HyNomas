@@ -1,0 +1,1104 @@
+{
+ "id": "7fa6ee49-f3d2-4a22-a224-fd7e1571c6cb",
+ "revision": 0,
+ "last_node_id": 13,
+ "last_link_id": 15,
+ "nodes": [
+  {
+   "id": 1,
+   "type": "UNETLoader",
+   "pos": [
+    40,
+    60
+   ],
+   "size": [
+    360,
+    82
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "unet_name",
+     "name": "unet_name",
+     "type": "COMBO",
+     "widget": {
+      "name": "unet_name"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "weight_dtype",
+     "name": "weight_dtype",
+     "type": "COMBO",
+     "widget": {
+      "name": "weight_dtype"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "MODEL",
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      1,
+      5,
+      9
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "UNETLoader"
+   },
+   "widgets_values": [
+    "nomas_dit_distilled_int8_convrot.safetensors",
+    "default"
+   ],
+   "widgets_values_named": {
+    "unet_name": "nomas_dit_distilled_int8_convrot.safetensors",
+    "weight_dtype": "default"
+   }
+  },
+  {
+   "id": 2,
+   "type": "CLIPLoader",
+   "pos": [
+    40,
+    200
+   ],
+   "size": [
+    360,
+    106
+   ],
+   "flags": {},
+   "order": 1,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "clip_name",
+     "name": "clip_name",
+     "type": "COMBO",
+     "widget": {
+      "name": "clip_name"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "type",
+     "name": "type",
+     "type": "COMBO",
+     "widget": {
+      "name": "type"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "device",
+     "name": "device",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "device"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "CLIP",
+     "name": "CLIP",
+     "type": "CLIP",
+     "links": [
+      2,
+      6,
+      10
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CLIPLoader"
+   },
+   "widgets_values": [
+    "qwen_2.5_vl_7b.safetensors",
+    "qwen_image",
+    "default"
+   ],
+   "widgets_values_named": {
+    "clip_name": "qwen_2.5_vl_7b.safetensors",
+    "type": "qwen_image",
+    "device": "default"
+   }
+  },
+  {
+   "id": 3,
+   "type": "VAELoader",
+   "pos": [
+    40,
+    370
+   ],
+   "size": [
+    360,
+    58
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "vae_name",
+     "name": "vae_name",
+     "type": "COMBO",
+     "widget": {
+      "name": "vae_name"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "VAE",
+     "name": "VAE",
+     "type": "VAE",
+     "links": [
+      13
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "VAELoader"
+   },
+   "widgets_values": [
+    "nomas_pixelumm_vae_bf16.safetensors"
+   ],
+   "widgets_values_named": {
+    "vae_name": "nomas_pixelumm_vae_bf16.safetensors"
+   }
+  },
+  {
+   "id": 4,
+   "type": "NomasWorldPrompt",
+   "pos": [
+    40,
+    480
+   ],
+   "size": [
+    380,
+    540
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "perspective",
+     "name": "perspective",
+     "type": "COMBO",
+     "widget": {
+      "name": "perspective"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "style",
+     "name": "style",
+     "type": "COMBO",
+     "widget": {
+      "name": "style"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "subject",
+     "name": "subject",
+     "type": "STRING",
+     "widget": {
+      "name": "subject"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "subject_details",
+     "name": "subject_details",
+     "type": "STRING",
+     "widget": {
+      "name": "subject_details"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "scene",
+     "name": "scene",
+     "type": "STRING",
+     "widget": {
+      "name": "scene"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "action",
+     "name": "action",
+     "type": "STRING",
+     "widget": {
+      "name": "action"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "seconds",
+     "name": "seconds",
+     "type": "FLOAT",
+     "widget": {
+      "name": "seconds"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "turn",
+     "name": "turn",
+     "type": "NOMAS_TURN",
+     "links": [
+      3
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "NomasWorldPrompt"
+   },
+   "widgets_values": [
+    "third-person follow",
+    "real-world footage",
+    "a small orange fox",
+    "Orange fur, a white chest and a fluffy tail.",
+    "<|Subject1|> stands on a stone path in a luminous forest at dusk. Blue fireflies drift between tall mossy trees, and soft mist hangs over the ground.",
+    "<|Subject1|> walks slowly along the path.",
+    5
+   ],
+   "widgets_values_named": {
+    "perspective": "third-person follow",
+    "style": "real-world footage",
+    "subject": "a small orange fox",
+    "subject_details": "Orange fur, a white chest and a fluffy tail.",
+    "scene": "<|Subject1|> stands on a stone path in a luminous forest at dusk. Blue fireflies drift between tall mossy trees, and soft mist hangs over the ground.",
+    "action": "<|Subject1|> walks slowly along the path.",
+    "seconds": 5
+   }
+  },
+  {
+   "id": 5,
+   "type": "NomasCameraPath",
+   "pos": [
+    460,
+    480
+   ],
+   "size": [
+    300,
+    200
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "script",
+     "name": "script",
+     "type": "STRING",
+     "widget": {
+      "name": "script"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "camera",
+     "name": "camera",
+     "type": "NOMAS_CAMERA",
+     "links": [
+      4
+     ]
+    }
+   ],
+   "title": "Camera path (turn 1)",
+   "properties": {
+    "Node name for S&R": "NomasCameraPath"
+   },
+   "widgets_values": [
+    "w 2\nw+left 1.5\nw 1.5"
+   ],
+   "widgets_values_named": {
+    "script": "w 2\nw+left 1.5\nw 1.5"
+   }
+  },
+  {
+   "id": 6,
+   "type": "NomasWorldGenerate",
+   "pos": [
+    460,
+    60
+   ],
+   "size": [
+    320,
+    238
+   ],
+   "flags": {},
+   "order": 7,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "model",
+     "name": "model",
+     "type": "MODEL",
+     "link": 1
+    },
+    {
+     "localized_name": "clip",
+     "name": "clip",
+     "type": "CLIP",
+     "link": 2
+    },
+    {
+     "localized_name": "turn",
+     "name": "turn",
+     "type": "NOMAS_TURN",
+     "link": 3
+    },
+    {
+     "localized_name": "camera",
+     "name": "camera",
+     "shape": 7,
+     "type": "NOMAS_CAMERA",
+     "link": 4
+    },
+    {
+     "localized_name": "seed",
+     "name": "seed",
+     "type": "INT",
+     "widget": {
+      "name": "seed"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "width",
+     "name": "width",
+     "type": "INT",
+     "widget": {
+      "name": "width"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "height",
+     "name": "height",
+     "type": "INT",
+     "widget": {
+      "name": "height"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "steps",
+     "name": "steps",
+     "type": "INT",
+     "widget": {
+      "name": "steps"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "history",
+     "name": "history",
+     "type": "COMBO",
+     "widget": {
+      "name": "history"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "LATENT",
+     "name": "LATENT",
+     "type": "LATENT",
+     "links": null
+    },
+    {
+     "localized_name": "world",
+     "name": "world",
+     "type": "NOMAS_WORLD",
+     "links": [
+      7
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "NomasWorldGenerate"
+   },
+   "widgets_values": [
+    42,
+    "fixed",
+    1280,
+    704,
+    8,
+    "window"
+   ],
+   "widgets_values_named": {
+    "seed": 42,
+    "control_after_generate": "fixed",
+    "width": 1280,
+    "height": 704,
+    "steps": 8,
+    "history": "window"
+   }
+  },
+  {
+   "id": 7,
+   "type": "NomasCameraPath",
+   "pos": [
+    820,
+    480
+   ],
+   "size": [
+    300,
+    200
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "script",
+     "name": "script",
+     "type": "STRING",
+     "widget": {
+      "name": "script"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "camera",
+     "name": "camera",
+     "type": "NOMAS_CAMERA",
+     "links": [
+      8
+     ]
+    }
+   ],
+   "title": "Camera path (turn 2)",
+   "properties": {
+    "Node name for S&R": "NomasCameraPath"
+   },
+   "widgets_values": [
+    "right 1\nw 2"
+   ],
+   "widgets_values_named": {
+    "script": "right 1\nw 2"
+   }
+  },
+  {
+   "id": 8,
+   "type": "NomasWorldContinue",
+   "pos": [
+    820,
+    60
+   ],
+   "size": [
+    340,
+    380
+   ],
+   "flags": {},
+   "order": 8,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "model",
+     "name": "model",
+     "type": "MODEL",
+     "link": 5
+    },
+    {
+     "localized_name": "clip",
+     "name": "clip",
+     "type": "CLIP",
+     "link": 6
+    },
+    {
+     "localized_name": "world",
+     "name": "world",
+     "type": "NOMAS_WORLD",
+     "link": 7
+    },
+    {
+     "localized_name": "camera",
+     "name": "camera",
+     "shape": 7,
+     "type": "NOMAS_CAMERA",
+     "link": 8
+    },
+    {
+     "localized_name": "change",
+     "name": "change",
+     "type": "STRING",
+     "widget": {
+      "name": "change"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "action",
+     "name": "action",
+     "type": "STRING",
+     "widget": {
+      "name": "action"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "seconds",
+     "name": "seconds",
+     "type": "FLOAT",
+     "widget": {
+      "name": "seconds"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "steps",
+     "name": "steps",
+     "type": "INT",
+     "widget": {
+      "name": "steps"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "LATENT",
+     "name": "LATENT",
+     "type": "LATENT",
+     "links": null
+    },
+    {
+     "localized_name": "world",
+     "name": "world",
+     "type": "NOMAS_WORLD",
+     "links": [
+      11
+     ]
+    }
+   ],
+   "title": "Turn 2: camera",
+   "properties": {
+    "Node name for S&R": "NomasWorldContinue"
+   },
+   "widgets_values": [
+    "",
+    "",
+    5,
+    8
+   ],
+   "widgets_values_named": {
+    "change": "",
+    "action": "",
+    "seconds": 5,
+    "steps": 8
+   }
+  },
+  {
+   "id": 9,
+   "type": "NomasWorldContinue",
+   "pos": [
+    1200,
+    60
+   ],
+   "size": [
+    340,
+    380
+   ],
+   "flags": {},
+   "order": 9,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "model",
+     "name": "model",
+     "type": "MODEL",
+     "link": 9
+    },
+    {
+     "localized_name": "clip",
+     "name": "clip",
+     "type": "CLIP",
+     "link": 10
+    },
+    {
+     "localized_name": "world",
+     "name": "world",
+     "type": "NOMAS_WORLD",
+     "link": 11
+    },
+    {
+     "localized_name": "camera",
+     "name": "camera",
+     "shape": 7,
+     "type": "NOMAS_CAMERA",
+     "link": null
+    },
+    {
+     "localized_name": "change",
+     "name": "change",
+     "type": "STRING",
+     "widget": {
+      "name": "change"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "action",
+     "name": "action",
+     "type": "STRING",
+     "widget": {
+      "name": "action"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "seconds",
+     "name": "seconds",
+     "type": "FLOAT",
+     "widget": {
+      "name": "seconds"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "steps",
+     "name": "steps",
+     "type": "INT",
+     "widget": {
+      "name": "steps"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "LATENT",
+     "name": "LATENT",
+     "type": "LATENT",
+     "links": [
+      12
+     ]
+    },
+    {
+     "localized_name": "world",
+     "name": "world",
+     "type": "NOMAS_WORLD",
+     "links": null
+    }
+   ],
+   "title": "Turn 3: text",
+   "properties": {
+    "Node name for S&R": "NomasWorldContinue"
+   },
+   "widgets_values": [
+    "a wooden bridge crosses a glowing stream ahead",
+    "<|Subject1|> trots onto the bridge.",
+    5,
+    8
+   ],
+   "widgets_values_named": {
+    "change": "a wooden bridge crosses a glowing stream ahead",
+    "action": "<|Subject1|> trots onto the bridge.",
+    "seconds": 5,
+    "steps": 8
+   }
+  },
+  {
+   "id": 10,
+   "type": "VAEDecode",
+   "pos": [
+    1580,
+    60
+   ],
+   "size": [
+    220,
+    46
+   ],
+   "flags": {},
+   "order": 10,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "samples",
+     "name": "samples",
+     "type": "LATENT",
+     "link": 12
+    },
+    {
+     "localized_name": "vae",
+     "name": "vae",
+     "type": "VAE",
+     "link": 13
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "IMAGE",
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      14
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "VAEDecode"
+   }
+  },
+  {
+   "id": 11,
+   "type": "CreateVideo",
+   "pos": [
+    1580,
+    170
+   ],
+   "size": [
+    300,
+    200
+   ],
+   "flags": {},
+   "order": 11,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "images",
+     "name": "images",
+     "type": "IMAGE",
+     "link": 14
+    },
+    {
+     "localized_name": "audio",
+     "name": "audio",
+     "shape": 7,
+     "type": "AUDIO",
+     "link": null
+    },
+    {
+     "localized_name": "fps",
+     "name": "fps",
+     "type": "FLOAT",
+     "widget": {
+      "name": "fps"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "bit_depth",
+     "name": "bit_depth",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "bit_depth"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "color_space",
+     "name": "color_space",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "color_space"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "codec",
+     "name": "codec",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "codec"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "VIDEO",
+     "name": "VIDEO",
+     "type": "VIDEO",
+     "links": [
+      15
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CreateVideo"
+   },
+   "widgets_values": [
+    24,
+    "auto",
+    "sRGB",
+    "none"
+   ],
+   "widgets_values_named": {
+    "fps": 24,
+    "bit_depth": "auto",
+    "color_space": "sRGB",
+    "codec": "none"
+   }
+  },
+  {
+   "id": 12,
+   "type": "SaveVideo",
+   "pos": [
+    1580,
+    420
+   ],
+   "size": [
+    420,
+    480
+   ],
+   "flags": {},
+   "order": 12,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "video",
+     "name": "video",
+     "type": "VIDEO",
+     "link": 15
+    },
+    {
+     "localized_name": "filename_prefix",
+     "name": "filename_prefix",
+     "type": "STRING",
+     "widget": {
+      "name": "filename_prefix"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "codec",
+     "name": "format.codec",
+     "type": "COMFY_DYNAMICCOMBO_V3",
+     "widget": {
+      "name": "format.codec"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "format",
+     "name": "format",
+     "type": "COMFY_DYNAMICCOMBO_V3",
+     "widget": {
+      "name": "format"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "codec",
+     "name": "codec",
+     "shape": 7,
+     "type": "COMFY_DYNAMICCOMBO_V3",
+     "widget": {
+      "name": "codec"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "video",
+     "name": "video",
+     "type": "VIDEO",
+     "links": null
+    }
+   ],
+   "properties": {},
+   "widgets_values": [
+    "video/nomas_world",
+    "auto",
+    "auto",
+    "auto"
+   ],
+   "widgets_values_named": {
+    "filename_prefix": "video/nomas_world",
+    "format": "auto",
+    "format.codec": "auto",
+    "codec": "auto"
+   }
+  },
+  {
+   "id": 13,
+   "type": "MarkdownNote",
+   "pos": [
+    1200,
+    480
+   ],
+   "size": [
+    340,
+    380
+   ],
+   "flags": {},
+   "order": 6,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "title": "Notes",
+   "properties": {},
+   "widgets_values": [
+    "## Nomas World\n\nEach **Nomas World Continue** adds a turn: a camera move, a change in words, or both. Chain as many as you like; the latent always holds the whole world.\n\n- Camera scripts: one `<keys> <seconds>` per line (w a s d up down left right, `wait`), keys joined with `+`. A camera path sets the turn length.\n- Write `<|Subject1|>` for the subject in scene / action text.\n- Trained at **1280x704**. 8 steps; the distilled DiT also works at 4 or 6.\n- For a multi-segment prompt with timestamps, swap Nomas World Prompt for **Nomas Prompt (JSON)**."
+   ],
+   "widgets_values_named": {
+    "text": "## Nomas World\n\nEach **Nomas World Continue** adds a turn: a camera move, a change in words, or both. Chain as many as you like; the latent always holds the whole world.\n\n- Camera scripts: one `<keys> <seconds>` per line (w a s d up down left right, `wait`), keys joined with `+`. A camera path sets the turn length.\n- Write `<|Subject1|>` for the subject in scene / action text.\n- Trained at **1280x704**. 8 steps; the distilled DiT also works at 4 or 6.\n- For a multi-segment prompt with timestamps, swap Nomas World Prompt for **Nomas Prompt (JSON)**."
+   },
+   "color": "#432",
+   "bgcolor": "#653"
+  }
+ ],
+ "links": [
+  [
+   1,
+   1,
+   0,
+   6,
+   0,
+   "MODEL"
+  ],
+  [
+   2,
+   2,
+   0,
+   6,
+   1,
+   "CLIP"
+  ],
+  [
+   3,
+   4,
+   0,
+   6,
+   2,
+   "NOMAS_TURN"
+  ],
+  [
+   4,
+   5,
+   0,
+   6,
+   3,
+   "NOMAS_CAMERA"
+  ],
+  [
+   5,
+   1,
+   0,
+   8,
+   0,
+   "MODEL"
+  ],
+  [
+   6,
+   2,
+   0,
+   8,
+   1,
+   "CLIP"
+  ],
+  [
+   7,
+   6,
+   1,
+   8,
+   2,
+   "NOMAS_WORLD"
+  ],
+  [
+   8,
+   7,
+   0,
+   8,
+   3,
+   "NOMAS_CAMERA"
+  ],
+  [
+   9,
+   1,
+   0,
+   9,
+   0,
+   "MODEL"
+  ],
+  [
+   10,
+   2,
+   0,
+   9,
+   1,
+   "CLIP"
+  ],
+  [
+   11,
+   8,
+   1,
+   9,
+   2,
+   "NOMAS_WORLD"
+  ],
+  [
+   12,
+   9,
+   0,
+   10,
+   0,
+   "LATENT"
+  ],
+  [
+   13,
+   3,
+   0,
+   10,
+   1,
+   "VAE"
+  ],
+  [
+   14,
+   10,
+   0,
+   11,
+   0,
+   "IMAGE"
+  ],
+  [
+   15,
+   11,
+   0,
+   12,
+   0,
+   "VIDEO"
+  ]
+ ],
+ "groups": [],
+ "config": {},
+ "extra": {
+  "ds": {
+   "scale": 0.75,
+   "offset": [
+    0,
+    0
+   ]
+  }
+ },
+ "version": 0.4
+}

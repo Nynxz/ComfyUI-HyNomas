@@ -1,0 +1,14 @@
+ComfyUI-Nomas
+ComfyUI port of the Hy-Nomas model architectures by Tencent Hunyuan
+(https://github.com/Tencent-Hunyuan/Hy-Nomas, Apache License 2.0).
+The model code in nomas/ is a reimplementation on ComfyUI's ops; parameter names follow the
+released checkpoints so the weights load unchanged. The prompt shaping, camera normalisation,
+history selection and decoder windowing follow that repository's inference code.
+
+The PixelUMM decoder (nomas/pixelumm.py) reimplements the inference port of NVIDIA PixelUMM's
+generation expert (https://github.com/nv-tlabs/PixelUMM, code Apache License 2.0) shipped in
+Hy-Nomas. Released PixelUMM weights and their derivatives, including Hy-Nomas's fine-tuned
+PixelUMM decoder and any conversion of it, are under the NVIDIA One-Way Noncommercial License:
+non-commercial research and evaluation only.
+
+Hy-Nomas weights: https://huggingface.co/tencent/Hy-Nomas (Apache License 2.0, except as above).

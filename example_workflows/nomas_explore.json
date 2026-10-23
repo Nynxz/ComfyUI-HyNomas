@@ -1,0 +1,533 @@
+{
+ "id": "6425251d-1e32-41d8-a34f-fb73df5d980f",
+ "revision": 0,
+ "last_node_id": 6,
+ "last_link_id": 4,
+ "nodes": [
+  {
+   "id": 1,
+   "type": "UNETLoader",
+   "pos": [
+    40,
+    60
+   ],
+   "size": [
+    360,
+    82
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "unet_name",
+     "name": "unet_name",
+     "type": "COMBO",
+     "widget": {
+      "name": "unet_name"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "weight_dtype",
+     "name": "weight_dtype",
+     "type": "COMBO",
+     "widget": {
+      "name": "weight_dtype"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "MODEL",
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      1
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "UNETLoader"
+   },
+   "widgets_values": [
+    "nomas_dit_distilled_int8_convrot.safetensors",
+    "default"
+   ],
+   "widgets_values_named": {
+    "unet_name": "nomas_dit_distilled_int8_convrot.safetensors",
+    "weight_dtype": "default"
+   }
+  },
+  {
+   "id": 2,
+   "type": "CLIPLoader",
+   "pos": [
+    40,
+    200
+   ],
+   "size": [
+    360,
+    106
+   ],
+   "flags": {},
+   "order": 1,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "clip_name",
+     "name": "clip_name",
+     "type": "COMBO",
+     "widget": {
+      "name": "clip_name"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "type",
+     "name": "type",
+     "type": "COMBO",
+     "widget": {
+      "name": "type"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "device",
+     "name": "device",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "device"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "CLIP",
+     "name": "CLIP",
+     "type": "CLIP",
+     "links": [
+      2
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CLIPLoader"
+   },
+   "widgets_values": [
+    "qwen_2.5_vl_7b.safetensors",
+    "qwen_image",
+    "default"
+   ],
+   "widgets_values_named": {
+    "clip_name": "qwen_2.5_vl_7b.safetensors",
+    "type": "qwen_image",
+    "device": "default"
+   }
+  },
+  {
+   "id": 3,
+   "type": "VAELoader",
+   "pos": [
+    40,
+    370
+   ],
+   "size": [
+    360,
+    58
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "vae_name",
+     "name": "vae_name",
+     "type": "COMBO",
+     "widget": {
+      "name": "vae_name"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "VAE",
+     "name": "VAE",
+     "type": "VAE",
+     "links": [
+      3
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "VAELoader"
+   },
+   "widgets_values": [
+    "nomas_pixelumm_vae_bf16.safetensors"
+   ],
+   "widgets_values_named": {
+    "vae_name": "nomas_pixelumm_vae_bf16.safetensors"
+   }
+  },
+  {
+   "id": 4,
+   "type": "NomasWorldPrompt",
+   "pos": [
+    40,
+    480
+   ],
+   "size": [
+    360,
+    560
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "perspective",
+     "name": "perspective",
+     "type": "COMBO",
+     "widget": {
+      "name": "perspective"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "style",
+     "name": "style",
+     "type": "COMBO",
+     "widget": {
+      "name": "style"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "subject",
+     "name": "subject",
+     "type": "STRING",
+     "widget": {
+      "name": "subject"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "subject_details",
+     "name": "subject_details",
+     "type": "STRING",
+     "widget": {
+      "name": "subject_details"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "scene",
+     "name": "scene",
+     "type": "STRING",
+     "widget": {
+      "name": "scene"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "action",
+     "name": "action",
+     "type": "STRING",
+     "widget": {
+      "name": "action"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "seconds",
+     "name": "seconds",
+     "type": "FLOAT",
+     "widget": {
+      "name": "seconds"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "turn",
+     "name": "turn",
+     "type": "NOMAS_TURN",
+     "links": [
+      4
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "NomasWorldPrompt"
+   },
+   "widgets_values": [
+    "first-person",
+    "real-world footage",
+    "a hiker",
+    "Walking with a small backpack and trekking poles.",
+    "A sunlit mountain trail winds between tall pine trees towards a turquoise lake, with snowy peaks in the distance and wildflowers along the path.",
+    "",
+    3
+   ],
+   "widgets_values_named": {
+    "perspective": "first-person",
+    "style": "real-world footage",
+    "subject": "a hiker",
+    "subject_details": "Walking with a small backpack and trekking poles.",
+    "scene": "A sunlit mountain trail winds between tall pine trees towards a turquoise lake, with snowy peaks in the distance and wildflowers along the path.",
+    "action": "",
+    "seconds": 3
+   }
+  },
+  {
+   "id": 5,
+   "type": "NomasExplore",
+   "pos": [
+    440,
+    60
+   ],
+   "size": [
+    900,
+    980
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "model",
+     "name": "model",
+     "type": "MODEL",
+     "link": 1
+    },
+    {
+     "localized_name": "clip",
+     "name": "clip",
+     "type": "CLIP",
+     "link": 2
+    },
+    {
+     "localized_name": "vae",
+     "name": "vae",
+     "type": "VAE",
+     "link": 3
+    },
+    {
+     "localized_name": "turn",
+     "name": "turn",
+     "type": "NOMAS_TURN",
+     "link": 4
+    },
+    {
+     "localized_name": "seed",
+     "name": "seed",
+     "type": "INT",
+     "widget": {
+      "name": "seed"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "width",
+     "name": "width",
+     "type": "INT",
+     "widget": {
+      "name": "width"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "height",
+     "name": "height",
+     "type": "INT",
+     "widget": {
+      "name": "height"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "change",
+     "name": "change",
+     "type": "STRING",
+     "widget": {
+      "name": "change"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "action",
+     "name": "action",
+     "type": "STRING",
+     "widget": {
+      "name": "action"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "seconds",
+     "name": "seconds",
+     "type": "FLOAT",
+     "widget": {
+      "name": "seconds"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "steps",
+     "name": "steps",
+     "type": "INT",
+     "widget": {
+      "name": "steps"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "history",
+     "name": "history",
+     "type": "COMBO",
+     "widget": {
+      "name": "history"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "controls",
+     "name": "controls",
+     "type": "STRING",
+     "widget": {
+      "name": "controls"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "turn_frames",
+     "name": "turn_frames",
+     "type": "IMAGE",
+     "links": null
+    },
+    {
+     "localized_name": "LATENT",
+     "name": "LATENT",
+     "type": "LATENT",
+     "links": null
+    },
+    {
+     "localized_name": "world",
+     "name": "world",
+     "type": "NOMAS_WORLD",
+     "links": null
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "NomasExplore",
+    "nomas_session": "6d5cd1ad-f04"
+   },
+   "widgets_values": [
+    42,
+    "fixed",
+    1280,
+    704,
+    "",
+    "",
+    3,
+    8,
+    "window",
+    "",
+    ""
+   ],
+   "widgets_values_named": {
+    "seed": 42,
+    "control_after_generate": "fixed",
+    "width": 1280,
+    "height": 704,
+    "change": "",
+    "action": "",
+    "seconds": 3,
+    "steps": 8,
+    "history": "window",
+    "controls": "",
+    "nomas_viewer": ""
+   }
+  },
+  {
+   "id": 6,
+   "type": "MarkdownNote",
+   "pos": [
+    1370,
+    60
+   ],
+   "size": [
+    420,
+    520
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "title": "How to explore",
+   "properties": {},
+   "widgets_values": [
+    "## Nomas Explore\n\n1. **Queue once** (or press *New world*) to generate the opening turn from the prompt on the left.\n2. **Click the viewer**, then hold **W A S D** (move / strafe) and the **arrow keys** (turn), or **drag** with the mouse. Recording starts on the first key and runs for the turn length; **Space/Enter** ends it early. The move is queued automatically.\n3. **Text turn**: type a *change* (\"a wooden bridge crosses a stream ahead\") and/or an *action*, then press *Text turn* (or record a move: the text is used with it). They clear after use.\n4. **Undo** drops the last turn, **New world** starts over.\n\nOnly the direction and the relative speed of a move reach the model; turning speed matters (the model scales it 2.5x).\n\nThe world lives in the server's memory per viewer session. *turn_frames* holds the latest turn, *latent* the whole world (VAE Decode it for the full video)."
+   ],
+   "widgets_values_named": {
+    "text": "## Nomas Explore\n\n1. **Queue once** (or press *New world*) to generate the opening turn from the prompt on the left.\n2. **Click the viewer**, then hold **W A S D** (move / strafe) and the **arrow keys** (turn), or **drag** with the mouse. Recording starts on the first key and runs for the turn length; **Space/Enter** ends it early. The move is queued automatically.\n3. **Text turn**: type a *change* (\"a wooden bridge crosses a stream ahead\") and/or an *action*, then press *Text turn* (or record a move: the text is used with it). They clear after use.\n4. **Undo** drops the last turn, **New world** starts over.\n\nOnly the direction and the relative speed of a move reach the model; turning speed matters (the model scales it 2.5x).\n\nThe world lives in the server's memory per viewer session. *turn_frames* holds the latest turn, *latent* the whole world (VAE Decode it for the full video)."
+   },
+   "color": "#432",
+   "bgcolor": "#653"
+  }
+ ],
+ "links": [
+  [
+   1,
+   1,
+   0,
+   5,
+   0,
+   "MODEL"
+  ],
+  [
+   2,
+   2,
+   0,
+   5,
+   1,
+   "CLIP"
+  ],
+  [
+   3,
+   3,
+   0,
+   5,
+   2,
+   "VAE"
+  ],
+  [
+   4,
+   4,
+   0,
+   5,
+   3,
+   "NOMAS_TURN"
+  ]
+ ],
+ "groups": [],
+ "config": {},
+ "extra": {
+  "ds": {
+   "scale": 0.95,
+   "offset": [
+    0,
+    0
+   ]
+  }
+ },
+ "version": 0.4
+}
