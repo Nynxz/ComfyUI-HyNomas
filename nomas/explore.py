@@ -27,14 +27,69 @@ from .world import World
 
 SESSIONS = {}
 MAX_SESSIONS = 2
+FPS = 24
+
+
+class Turn:
+    """One turn as the viewer shows it: its frames in the world, what kind of turn it was, the
+    camera path, and its preview clip (re-encoded when the next turn re-blends its tail)."""
+
+    def __init__(self, start, kind, label, path):
+        self.start, self.kind, self.label, self.path = start, kind, label, path
+        self.end = start
+        self.clip = None
+
+    def info(self):
+        return {"start": self.start, "frames": self.end - self.start, "kind": self.kind, "label": self.label,
+                "path": self.path, "clip": self.clip}
 
 
 class Session:
     def __init__(self, world):
         self.world = world
-        self.undo = []  # (world, frame count) before each turn
+        self.undo = []  # (world, latent frames, turns) before each turn
         self.frames = None  # uint8 [F, H, W, 3] on the CPU
         self.decoded = 0  # latent frames already decoded
+        self.turns = []
+
+    def state(self, op, saved=None):
+        return {"session": None, "op": op, "turns": [t.info() for t in self.turns], "frames": int(self.frames.shape[0]),
+                "fps": FPS, "can_undo": bool(self.undo), "saved": saved}
+
+
+def describe(change, action, ticks, opening=None):
+    """``(kind, label)`` of a turn, for the timeline."""
+    words = " · ".join(x for x in (change.strip(), action.strip().replace("<|Subject1|>", "they")) if x)
+    if opening is not None:
+        return "opening", opening
+    moves = []
+    for keys, dx, dy in ticks:
+        k = "+".join(keys) if keys else ("look" if dx or dy else "wait")
+        if moves and moves[-1][0] == k:
+            moves[-1][1] += 1
+        else:
+            moves.append([k, 1])
+    camera = ", ".join(f"{k.upper()} {n / FPS:.1f}s" for k, n in moves if k != "wait")
+    if ticks and words:
+        return "both", f"{camera} — {words}"
+    if ticks:
+        return "camera", camera or "camera"
+    return "text", words or "camera-free turn"
+
+
+def camera_path(world, ticks):
+    """The camera over a turn as ``[x, y, z, yaw, pitch]`` points (Three.js world axes), for the
+    viewer's 3D path view; one point per 4 frames, ending at the turn's last pose."""
+    pose = (world.pose or cam.Pose()).copy()
+
+    def point(p):
+        return [round(float(v), 3) for v in p.position] + [round(p.yaw, 4), round(p.pitch, 4)]
+    points = [point(pose)]
+    for i, (keys, dx, dy) in enumerate(ticks):
+        pose.step(set(keys), dx, dy)
+        if i % 4 == 3 or i == len(ticks) - 1:
+            points.append(point(pose))
+    return points
 
 
 @torch.no_grad()
@@ -99,9 +154,10 @@ class NomasExplore(IO.ComfyNode):
                 IO.Int.Input("seed", default=42, min=0, max=0xFFFFFFFFFFFFFFFF),
                 IO.Int.Input("width", default=1280, min=256, max=2048, step=32),
                 IO.Int.Input("height", default=704, min=256, max=2048, step=32),
-                IO.String.Input("change", multiline=True, default="",
-                                tooltip="Optional: what changes in the next turn (cleared by the viewer after use)."),
-                IO.String.Input("action", multiline=True, default="", tooltip="Optional: what <|Subject1|> does in the next turn."),
+                IO.String.Input("change", default="",
+                                tooltip="Optional: what changes in the next turn, e.g. 'rain starts streaking down the window' "
+                                        "(cleared by the viewer after use)."),
+                IO.String.Input("action", default="", tooltip="Optional: what <|Subject1|> does in the next turn."),
                 IO.Float.Input("seconds", default=3.0, min=0.5, max=15.0, step=0.5,
                                tooltip="Length of a turn without a camera move (the recording sets it otherwise)."),
                 IO.Int.Input("steps", default=8, min=1, max=16, advanced=True),
@@ -128,49 +184,64 @@ class NomasExplore(IO.ComfyNode):
         if session is not None and ((session.world.h, session.world.w) != size or session.world.seed != seed):
             session = None  # a new size or seed starts over
 
-        clip_start = 0
         if op in ("view", "save"):
             if session is None:
                 raise ValueError("no world to show yet: queue a turn first")
-            full = session.frames
-            clip = save_clip(full, output=op == "save")
-            ui = {"nomas_clip": [clip], "nomas_state": [{
-                "session": sid, "turns": len(session.world.segments), "frames": int(full.shape[0]),
-                "seconds": round(full.shape[0] / 24, 2), "can_undo": bool(session.undo),
-                "saved": f"{clip['subfolder']}/{clip['filename']}" if op == "save" else None, "op": op}]}
-            return IO.NodeOutput(full.float() / 255.0, {"samples": session.world.latent()}, session.world, ui=ui)
+            saved = None
+            if op == "save":
+                clip = save_clip(session.frames, output=True)
+                saved = f"{clip['subfolder']}/{clip['filename']}"
+            return cls.output(session, sid, op, 0, saved)
+
         if op == "undo":
             if session is None or not session.undo:
                 raise ValueError("nothing to undo")
-            session.world, n = session.undo.pop()
+            session.world, n, session.turns = session.undo.pop()
             session.frames, session.decoded = session.frames[:4 * n], n
-        elif session is None or op == "reset":
+            last = session.turns[-1]
+            last.end = session.frames.shape[0]
+            last.clip = save_clip(session.frames[last.start:last.end])
+            return cls.output(session, sid, op, last.start)
+
+        if session is None or op == "reset":
             world = World(seed, height, width, history)
             segs, _ = prompts.segment_prompts(turn["item"])
             latent_frames = (turn_frames(turn.get("seconds", seconds), ticks) - 1) // 4 + 1
+            path = camera_path(world, ticks)
+            scene = turn["item"]["segments"][0].get("visual_description_long", "")
             run_turn(world, model, clip, segs[0], latent_frames, ticks or None, steps)
             session = Session(world)
-            SESSIONS[sid] = session
+            session.turns.append(Turn(0, *describe("", "", ticks, opening=scene.replace("<|Subject1|>", "the subject")[:160]), path))
+            decode_new(vae, session)
+            SESSIONS[sid] = session  # only once its first turn is decoded, so a failed start leaves nothing broken
             while len(SESSIONS) > MAX_SESSIONS:
                 SESSIONS.pop(next(iter(SESSIONS)))
-            decode_new(vae, session)
         else:
             before = session.world.frames
-            session.undo.append((session.world, before))
+            session.undo.append((session.world, before, [t for t in session.turns]))
             session.undo = session.undo[-8:]
             world = session.world.fork()
             frames = turn_frames(seconds, ticks)
-            prompt = follow_up_prompt(change, action, frames / 24)
+            prompt = follow_up_prompt(change, action, frames / FPS)
+            path = camera_path(world, ticks)
             run_turn(world, model, clip, prompt, (frames - 1) // 4 + 1, ticks or None, steps)
             session.world = world
-            clip_start = 4 * before
+            prev = session.turns[-1]
+            session.turns = session.turns[:-1] + [Turn(prev.start, prev.kind, prev.label, prev.path)]  # undo keeps the old one
+            session.turns.append(Turn(4 * before, *describe(change, action, ticks), path))
             decode_new(vae, session)
+        # the new turn's clip, and the previous one's (its tail was re-blended with the new frames)
+        for t, nxt in zip(session.turns, session.turns[1:] + [None]):
+            end = nxt.start if nxt is not None else session.frames.shape[0]
+            if t.clip is None or t.end != end:
+                t.end = end
+                t.clip = save_clip(session.frames[t.start:t.end])
+        return cls.output(session, sid, op, session.turns[-1].start)
 
-        frames = session.frames
-        shown = frames[max(0, clip_start - 12):]  # the new turn, with half a second of lead-in
-        ui = {"nomas_clip": [save_clip(shown)], "nomas_state": [{
-            "session": sid, "turns": len(session.world.segments), "frames": int(frames.shape[0]),
-            "seconds": round(frames.shape[0] / 24, 2), "can_undo": bool(session.undo), "op": op}]}
-        logging.info("Nomas Explore: %s, %d turns, %.1f s", sid, len(session.world.segments), frames.shape[0] / 24)
-        images = frames[clip_start:].float() / 255.0  # this turn only; the latent holds the whole world
-        return IO.NodeOutput(images, {"samples": session.world.latent()}, session.world, ui=ui)
+    @classmethod
+    def output(cls, session, sid, op, first, saved=None):
+        state = session.state(op, saved)
+        state["session"] = sid
+        logging.info("Nomas Explore: %s, %d turns, %.1f s", sid, len(session.turns), session.frames.shape[0] / FPS)
+        images = session.frames[first:].float() / 255.0  # this turn only (the whole world for view/save)
+        return IO.NodeOutput(images, {"samples": session.world.latent()}, session.world, ui={"nomas_state": [state]})

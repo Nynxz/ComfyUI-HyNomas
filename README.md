@@ -54,11 +54,14 @@ In [`example_workflows`](example_workflows), also under **Templates → Custom N
 - **Nomas World Continue**: adds a turn. The turn can be a change in words ("a wooden bridge crosses a stream
   ahead"), an action, a camera path, or a mix of them.
 - **Nomas Explore**: the interactive node.
-  - **Text turn** runs a turn from the change/action fields without a move.
-  - **Undo** drops the last turn, and **New world** starts over.
-  - Each turn decodes only its new frames, plus 5 latents of overlap cross-faded into the old ones.
-  - **Play all** shows the whole world from the start, and **Save video** writes it to `output/video` as an mp4, both
-    from the frames already decoded.
+  - While you record a move, a live 3D fly-through (grid floor, back wall, subject marker) shows it as you make it,
+    using the same movement rules the server integrates.
+  - The timeline plays the whole world back to back, one coloured segment per turn (opening, camera, text, both),
+    with a playhead to scrub, and the current turn's label underneath.
+  - A corner view draws the camera's path through the world in 3D, with the camera's frustum following playback.
+  - **Text turn** runs a turn from the change / action fields, **Undo** drops the last turn, **New world** starts over,
+    and **Save video** writes the whole world to `output/video` as an mp4 (from the frames already decoded).
+  - Each turn decodes only its new frames, plus 5 latents of overlap cross-faded into the previous turn.
 
 **Camera.** Only the direction and the relative speed of a move reach the model, because translations are normalised
 per turn. The turning speed does matter: rotations are not normalised, and the model scales them by 2.5×. A camera
